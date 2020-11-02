@@ -58,9 +58,30 @@ namespace EFTest
 
             db.SaveChanges();
 
+            Console.WriteLine("Menu:");
+            foreach (Dish dish in db.Dishes)
+            {
+                Console.WriteLine(dish.Name);
+            }
+
+            // Print meatless food
+            var meat = db.Ingredients.Where(i => i.IsMeat);
+            var withoutMeat = db.Dishes.Where(d => !meat.Any(i => d.Ingredients.Contains(i)));
+            //var withoutMeat = db.Dishes.Where(i => !i.Ingredients.Contains(j=>j.IsMeat));
+            //var rejectList = db.Dishes.Where(d => !meat.Contains(d.Ingredients));
+            //var filteredList = fullList.Except(rejectList);
+            Console.WriteLine("Vegetarian Dishes:");
+            foreach (var dish in withoutMeat)
+            {
+                Console.WriteLine(dish.Name); 
+            }
+
+            //from dishes in db.Dishes where dishes.Ingredients.
+
             // Delete
             Console.WriteLine("Deleting salad dish from menu");
             db.Remove(db.Dishes.First(d => d.ID == 01));
+
             db.SaveChanges();
         }
     }
