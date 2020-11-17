@@ -67,9 +67,6 @@ namespace EFTest
             // Print meatless food
             var meat = db.Ingredients.Where(i => i.IsMeat);
             var withoutMeat = db.Dishes.Where(d => !meat.Any(i => d.Ingredients.Contains(i)));
-            //var withoutMeat = db.Dishes.Where(i => !i.Ingredients.Contains(j=>j.IsMeat));
-            //var rejectList = db.Dishes.Where(d => !meat.Contains(d.Ingredients));
-            //var filteredList = fullList.Except(rejectList);
             Console.WriteLine("Vegetarian Dishes:");
             foreach (var dish in withoutMeat)
             {

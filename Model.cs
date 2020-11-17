@@ -11,10 +11,6 @@ namespace EFTest
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
             => options.UseSqlite("Data Source=Recipes.db");
-        //public MenuContext(DbContextOptions<MenuContext> options): base(options)
-        //{
-        //    Database.EnsureCreated();
-        //}
     }
 
     // Food composed of ingredients
