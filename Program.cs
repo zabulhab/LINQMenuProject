@@ -69,6 +69,7 @@ namespace EFTest
             {
                 if ( !db.DishIngredientList.Any( i => i.Id == dil.Id ) ) 
                 {
+                    Console.WriteLine("Storing the ingredients for " + db.Dishes.First(d => d.Id == dil.Dish_ID).Name);
                     db.DishIngredientList.Add(dil);
                 }
             }
@@ -84,14 +85,12 @@ namespace EFTest
                 }
             }
 
-            // Update ingredient lists
+            // Update DishIngredientList_ID references in dishes
 
             var applePie = db.Dishes.First(d => d.Id == ConstantNumbers.APPLE_PIE_DISH_ID);
-            Console.WriteLine("Storing the ingredients for " + applePie.Name);
             applePie.DishIngredientList_ID = ConstantNumbers.APPLE_PIE_INGREDIENTLIST_ID;
 
             var meatPie = db.Dishes.First(d => d.Id == ConstantNumbers.MEAT_PIE_DISH_ID);
-            Console.WriteLine("Storing the ingredients for " + meatPie.Name);
             meatPie.DishIngredientList_ID = ConstantNumbers.MEAT_PIE_INGREDIENTLIST_ID;
             
             db.SaveChanges();
