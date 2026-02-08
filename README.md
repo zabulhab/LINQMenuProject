@@ -1,4 +1,5 @@
 [Work in Progress] 
+
 My first basic project using the C# Entity Framework and LINQ. 
 For now, stores dishes and their ingredients in a MySQL database then finds all dishes containing the "gluten" allergen. These are printed to the console. 
 The next step is changing from hard-coded "recipes" to reading in JSON files defining what ingredients are in a dish and what allergens are in an ingredient.
