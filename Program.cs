@@ -6,15 +6,27 @@ using System.Globalization;
 // TODO: Make JSON storing recipes to tell dishes which ingredients they contain?
 // TODO: Make JSON storing ingredients and their allergen info
 // TODO: turn IDs into static final constants in another class
+// TODO: Add OnDelete to foreign keys in table defs
 // My first time using the Entity Framework with LINQ queries
 namespace EFTest
 {
 
     class Program
     {
-        static void Main()
+        //TODO: pass in file name input to read 
+        static void Main(string[] args)
         {
+            if (args.Length == 0)
+            {
+                Console.WriteLine("Error: Please provide input recipe file");
+            }
+            
+            string filepath = args[0];
             using var db = new MenuContext();
+
+            List<object> parsedRecipes = RecipeParser.get_dishes_and_ingredients(filepath);
+
+            // TODO: get input from json parser instead
 
             List<Ingredient> newIngredients = new List<Ingredient>();
             newIngredients.Add(new Ingredient { Id = 1, Name = "Apple" });

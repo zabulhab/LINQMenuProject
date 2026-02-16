@@ -1,0 +1,98 @@
+[
+    {
+      "_id": 11,
+      "index": 0,
+      "recipeName": "salad",
+      "ingredients": [
+        { "name": "white cabbage",
+          "details" : 
+            {
+             "allergens":[],
+             "portion":100,
+             "portionunit": "g"
+            }
+          
+        },
+        { "name": "carrot",
+          "details" : 
+            {
+              "allergens":[],
+              "portion":60,
+              "portionunit": "g"
+            }
+          
+        },
+        { "name": "sesame oil",
+          "details" : 
+            {
+              "allergens":["sesame"],
+              "portion":5,
+              "portionunit": "ml"
+            }
+          
+        },
+        { "name": "rice vinegar",
+          "details" : 
+            {
+              "allergens":[],
+              "portion":10,
+              "portionunit": "ml"
+            }
+          
+        },
+        { "name": "sugar",
+          "details" : 
+            {
+              "allergens":[],
+              "portion":10,
+              "portionunit": "g"
+            }
+          
+        }
+      ]
+    },
+    {
+      "_id": 12,
+      "index": 1,
+      "recipeName": "apple pie",
+      "ingredients": [
+        { "name": "apple",
+          "details" : 
+            {
+              "allergens":[],
+              "portion":100,
+              "portionunit": "g"
+            }
+          
+        },
+        { "name": "flour",
+          "details" : 
+            {
+              "allergens":["gluten"],
+              "portion":200,
+              "portionunit": "g"
+            }
+          
+        },
+        { "name": "butter",
+          "details" : 
+            {
+              "allergens":["dairy"],
+              "portion":20,
+              "portionunit": "g"
+            }
+          
+        },
+        { "name": "sugar",
+          "details" : 
+            {
+              "allergens":[],
+              "portion":50,
+              "portionunit": "g"
+            }
+          
+        }
+      ]
+    }
+
+  ]

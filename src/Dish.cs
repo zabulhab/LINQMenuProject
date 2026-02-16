@@ -28,4 +28,7 @@ using System.Collections.Generic;
             Name = name;
         }
 
+    public Dish()
+    {
     }
+}
