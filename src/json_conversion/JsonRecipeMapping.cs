@@ -61,9 +61,15 @@ public class JsonRecipeMapping
 
     public class JsonIngredientDetails
     {
-        public List<string> Allergens { get; set; }
+        public List<JsonAllergenRepresentation> Allergens { get; set; }
         public int Portion { get; set; }
         public string PortionUnit { get; set; }
+    }
+
+    public class JsonAllergenRepresentation
+    {
+        public string AllergenName { get; set; }
+        public string AllergenStatus { get; set; } 
     }
 }
 

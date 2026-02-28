@@ -24,33 +24,45 @@ namespace EFTest
             string filepath = args[0];
             using var db = new MenuContext();
 
-            List<object> parsedRecipes = RecipeParser.get_dishes_and_ingredients(filepath);
+            (List<Dish> ParsedDishes,List<Ingredient> ParsedIngredients) = RecipeParser.GetDishesAndIngredients(filepath, db);
 
-            // TODO: get input from json parser instead
-
-            List<Ingredient> newIngredients = new List<Ingredient>();
-            newIngredients.Add(new Ingredient { Id = 1, Name = "Apple" });
-            newIngredients.Add(new Ingredient { Id = 2, Name = "Sugar" });
-            newIngredients.Add(new Ingredient { Id = 3, Name = "Flour", AllergenGluten = AllergenStatusBool.Yes });
-            newIngredients.Add(new Ingredient { Id = 4, Name = "Butter", AllergenDairy = AllergenStatusBool.Yes });
-            newIngredients.Add(new Ingredient { Id = 5, Name = "Beef", AllergenMeat = AllergenStatusBool.Yes });
-
-            List<Dish> newDishes = new List<Dish>();
-            newDishes.Add( new Dish( 1, "Salad") );
-            newDishes.Add( new Dish( 2, "Apple Pie") );
-            newDishes.Add(new Dish( 3, "Meat Pie" ));
-
-            foreach (Dish dish in newDishes)
+            if ( ParsedDishes.Count < 1 || ParsedIngredients.Count < 1 )
             {
-                if ( !db.Dishes.Any( d => d.Id ==  dish.Id) ) {
+                Console.WriteLine("Error: No data could be derived from JSON input");
+                return;
+            }
+            //return;
+            // TODO: get input from json parser instead
+            // > requires generating IDs...
+            // If DB contains a dish with same name, do not add
+            // If DB contains ingredient with same name, do not add
+            // Since the name should be changable later, we use an integer ID as the key
+
+            List<Ingredient> inputIngredients = ParsedIngredients;
+            // List<Ingredient> inputIngredients = new List<Ingredient>();
+            // inputIngredients.Add(new Ingredient { Id = 1, Name = "Apple" });
+            // inputIngredients.Add(new Ingredient { Id = 2, Name = "Sugar" });
+            // inputIngredients.Add(new Ingredient { Id = 3, Name = "Flour", AllergenGluten = AllergenStatusBool.Yes });
+            // inputIngredients.Add(new Ingredient { Id = 4, Name = "Butter", AllergenDairy = AllergenStatusBool.Yes });
+            // inputIngredients.Add(new Ingredient { Id = 5, Name = "Beef", AllergenMeat = AllergenStatusBool.Yes });
+
+            List<Dish> inputDishes = ParsedDishes;
+            // List<Dish> inputDishes = new List<Dish>();
+            // inputDishes.Add( new Dish( 1, "Salad") );
+            // inputDishes.Add( new Dish( 2, "Apple Pie") );
+            // inputDishes.Add(new Dish( 3, "Meat Pie" ));
+
+            foreach (Dish dish in inputDishes)
+            {
+                if ( !db.Dishes.Any( d => d.Name ==  dish.Name) ) {
                     Console.WriteLine("Inserting new dish " + dish.Name + " into dishes table");
                     db.Dishes.Add(dish);
                  }
             }
 
-            foreach (Ingredient ingredient in newIngredients)
+            foreach (Ingredient ingredient in inputIngredients)
             {
-                if ( !db.Ingredients.Any( i => i.Id == ingredient.Id ) ) {
+                if ( !db.Ingredients.Any( i => i.Name == ingredient.Name ) ) {
                     Console.WriteLine("Inserting new ingredient " + ingredient.Name + " into ingredients table");
                     db.Ingredients.Add(ingredient);
                  }
@@ -58,20 +70,24 @@ namespace EFTest
 
             db.SaveChanges();
 
-            // Lists to store dish ingredient lists and dish ingredients
+            // Lists to store DishIngredientLists and DishIngredients
             List<DishIngredientList> newDishIngredientLists = new List<DishIngredientList>();
             List<List<DishIngredient>> newDishIngredients = new List<List<DishIngredient>>();
 
-            // create and add new dish ingredient lists and dish ingredients to lists
+            foreach (Dish d in inputDishes)
+            {
+
+            }
+            // Create and add new DishIngredientLists and DishIngredients to lists
             newDishIngredientLists.Add( new DishIngredientList( ConstantNumbers.APPLE_PIE_INGREDIENTLIST_ID, 
                                                                                 ConstantNumbers.APPLE_PIE_DISH_ID ) );
             newDishIngredientLists.Add( new DishIngredientList( ConstantNumbers.MEAT_PIE_INGREDIENTLIST_ID, 
                                                                                 ConstantNumbers.MEAT_PIE_DISH_ID ) );
             
-            newDishIngredients.Add( getDishIngredients( db, 
+            newDishIngredients.Add( GetDishIngredients( db, 
                                                         ConstantNumbers.APPLE_PIE_INGREDIENTLIST_ID, 
                                                         new String[]{"Apple", "Sugar", "Flour", "Butter"}));
-            newDishIngredients.Add( getDishIngredients( db, 
+            newDishIngredients.Add( GetDishIngredients( db, 
                                                         ConstantNumbers.MEAT_PIE_INGREDIENTLIST_ID, 
                                                         new String[]{"Beef", "Sugar", "Flour", "Butter"}));
 
@@ -133,8 +149,15 @@ namespace EFTest
 
             db.SaveChanges();
         }
-
-    private static List<DishIngredient> getDishIngredients(MenuContext db, int dishIngredientListID, string[] ingredients)
+        
+        /// <summary>
+        /// Generates and returns a list of DishIngredients associated with a DishIngredientList
+        /// </summary>
+        /// <param name="db">Menu Context object</param>
+        /// <param name="dishIngredientListID"></param>
+        /// <param name="ingredients">Ingredients that should be in the DishIngredientList</param>
+        /// <returns>List of DishIngredients associated with a DishIngredientList</returns>
+    private static List<DishIngredient> GetDishIngredients(MenuContext db, int dishIngredientListID, string[] ingredients)
         {
             List<DishIngredient> dishComposition = new List<DishIngredient>();
             for (int i = 0; i < ingredients.Length; i++)
