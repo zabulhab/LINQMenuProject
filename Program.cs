@@ -60,12 +60,12 @@ namespace EFTest
                 { 
                     dishName = ParsedDishes.First(d => d.Id == dil.Dish_ID).Name; 
                 }
-                catch
+                catch (Exception e)
                 {
-                    Console.WriteLine($"No provided dish with name {dil.Dish_ID}");
+                    Console.WriteLine($"Error: {e.Message}");
                 }
                 // If a DishIngredientList doesn't yet exist for this Dish
-                if ( !db.DishIngredientList.Any( i => i.Dish_Name == dishName ) ) 
+                if ( !db.DishIngredientList.Any( i => i.Dish_ID == dil.Dish_ID ) ) 
                 {
                     Console.WriteLine("Storing the ingredients for " + dishName );
                     db.DishIngredientList.Add(dil);
@@ -77,27 +77,12 @@ namespace EFTest
             }
             db.SaveChanges();
             
-            // TODO: change to use UPDATE on existing DishIngredientList/s if trying ADD with newDishIngredients
             foreach (DishIngredient di in ParsedDishIngredients)
             {
-                string dishName = "";
-                DishIngredientList savedDishIngredientList;
-                try 
-                { 
-                    savedDishIngredientList = db.DishIngredientList.First(d => d.Id == di.DishIngredientList_ID); 
-                }
-                catch
-                {
-                    // 
-                }
-                // If DishIngredientList with same DishName exists, change di.DishIngredientList_ID before adding 
-                // DishIngredients to DB, if those ingredients don't already exist on the DishIngredient table
-                // 
                 if ( !db.DishIngredientList.Any(dil=>dil.Id == di.DishIngredientList_ID) )
                 {
                     Console.WriteLine("Error: Tried to add DishIngredients to a non-existent DishIngredientList through Add");
                 }   
-                else if (db.DishIngredientList.Contains(dil=>dil.Name==di))
                 if ( !db.DishIngredients.Any( i => i.Id == di.Id && 
                                                 i.DishIngredientList_ID == di.DishIngredientList_ID ) ) {
                     db.DishIngredients.Add(di);

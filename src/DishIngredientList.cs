@@ -10,7 +10,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
         public long Dish_ID { get; private set; }
 
-        public string Dish_Name { get; set; }
+        //public string Dish_Name { get; set; }
+
+        //public Dish Dish { get; set; }
 
         public DishIngredientList(long dish_ID )
         {
