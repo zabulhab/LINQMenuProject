@@ -1,18 +1,20 @@
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
     // Collection of DishIngredients
     public class DishIngredientList
     {
-        [Key] // f
-        public int Id { get; set; } 
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.None)] // f
+        public long Id { get; private set; } 
 
-        public int Dish_ID { get; private set; }
+        public long Dish_ID { get; private set; }
 
-        public DishIngredientList( int id, int dish_ID )
+        public string Dish_Name { get; set; }
+
+        public DishIngredientList(long dish_ID )
         {
-            //Id = System.Guid.NewGuid();
-            Id = id;
+            Id = EFTest.MenuContext.IdGenerator.CreateId();
             Dish_ID = dish_ID;
         }
 

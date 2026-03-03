@@ -1,34 +1,21 @@
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
+using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
-    // Composed of DishIngredients
-    public class Dish
+// Composed of Ingredients obtainable through DishIngredientList
+public class Dish
     {
-        [Key]
-        public int Id { get; set; }
+        [Key,DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public long Id { get; private set; }
         public string Name { get; set; }
 
-        // Ingredients in this recipe, using HashSet to prevent duplicates
-        //public HashSet<DishIngredient> DishIngredients { get; set; } = new HashSet<DishIngredient>();
-        //public DishIngredient DishIngredients { get; set; }
-        // public DishIngredientList DishIngredientList 
-        // { 
-        //     get{ return DishIngredientList; } 
-        //     set
-        //     { 
-        //         DishIngredientList = value;
-        //         DishIngredientList_ID = value.Id;
-        //     } 
-        // }
-        public int DishIngredientList_ID { get; set; }
+        // removed to avoid circular dependency
+        //public long DishIngredientList_ID { get; set; }
 
-        public Dish( int id, string name = null )
+        public Dish( string name = null )
         {
-            Id = id;
-            Name = name;
+            Id = EFTest.MenuContext.IdGenerator.CreateId();
+            if (name != null) Name = name;
         }
-
-    public Dish()
-    {
     }
-}

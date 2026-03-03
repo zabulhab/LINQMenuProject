@@ -2,10 +2,9 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Globalization;
+using Microsoft.EntityFrameworkCore;
 
-// TODO: Make JSON storing recipes to tell dishes which ingredients they contain?
-// TODO: Make JSON storing ingredients and their allergen info
-// TODO: turn IDs into static final constants in another class
+// TODO: use update and delete to change ingredients stored in dish ingredients
 // TODO: Add OnDelete to foreign keys in table defs
 // My first time using the Entity Framework with LINQ queries
 namespace EFTest
@@ -13,115 +12,103 @@ namespace EFTest
 
     class Program
     {
-        //TODO: pass in file name input to read 
         static void Main(string[] args)
         {
             if (args.Length == 0)
             {
                 Console.WriteLine("Error: Please provide input recipe file");
+                return;
             }
             
             string filepath = args[0];
             using var db = new MenuContext();
 
-            (List<Dish> ParsedDishes,List<Ingredient> ParsedIngredients) = RecipeParser.GetDishesAndIngredients(filepath, db);
+            (List<Dish> ParsedDishes,
+            List<Ingredient> ParsedIngredients,
+            List<DishIngredientList> ParsedDishIngredientLists,
+            List<DishIngredient> ParsedDishIngredients) 
+                = RecipeParser.GetDishesAndIngredients(filepath, db);
 
             if ( ParsedDishes.Count < 1 || ParsedIngredients.Count < 1 )
             {
                 Console.WriteLine("Error: No data could be derived from JSON input");
                 return;
             }
-            //return;
-            // TODO: get input from json parser instead
-            // > requires generating IDs...
-            // If DB contains a dish with same name, do not add
-            // If DB contains ingredient with same name, do not add
-            // Since the name should be changable later, we use an integer ID as the key
 
-            List<Ingredient> inputIngredients = ParsedIngredients;
-            // List<Ingredient> inputIngredients = new List<Ingredient>();
-            // inputIngredients.Add(new Ingredient { Id = 1, Name = "Apple" });
-            // inputIngredients.Add(new Ingredient { Id = 2, Name = "Sugar" });
-            // inputIngredients.Add(new Ingredient { Id = 3, Name = "Flour", AllergenGluten = AllergenStatusBool.Yes });
-            // inputIngredients.Add(new Ingredient { Id = 4, Name = "Butter", AllergenDairy = AllergenStatusBool.Yes });
-            // inputIngredients.Add(new Ingredient { Id = 5, Name = "Beef", AllergenMeat = AllergenStatusBool.Yes });
-
-            List<Dish> inputDishes = ParsedDishes;
-            // List<Dish> inputDishes = new List<Dish>();
-            // inputDishes.Add( new Dish( 1, "Salad") );
-            // inputDishes.Add( new Dish( 2, "Apple Pie") );
-            // inputDishes.Add(new Dish( 3, "Meat Pie" ));
-
-            foreach (Dish dish in inputDishes)
-            {
-                if ( !db.Dishes.Any( d => d.Name ==  dish.Name) ) {
-                    Console.WriteLine("Inserting new dish " + dish.Name + " into dishes table");
-                    db.Dishes.Add(dish);
-                 }
-            }
-
-            foreach (Ingredient ingredient in inputIngredients)
+            foreach (Ingredient ingredient in ParsedIngredients)
             {
                 if ( !db.Ingredients.Any( i => i.Name == ingredient.Name ) ) {
                     Console.WriteLine("Inserting new ingredient " + ingredient.Name + " into ingredients table");
                     db.Ingredients.Add(ingredient);
                  }
             }
-
             db.SaveChanges();
 
-            // Lists to store DishIngredientLists and DishIngredients
-            List<DishIngredientList> newDishIngredientLists = new List<DishIngredientList>();
-            List<List<DishIngredient>> newDishIngredients = new List<List<DishIngredient>>();
-
-            foreach (Dish d in inputDishes)
+            foreach (Dish dish in ParsedDishes)
             {
-
+                if ( !db.Dishes.Any( d => d.Name ==  dish.Name) ) {
+                    Console.WriteLine("Inserting new dish " + dish.Name + " into dishes table");
+                    db.Dishes.Add(dish);
+                 }
             }
-            // Create and add new DishIngredientLists and DishIngredients to lists
-            newDishIngredientLists.Add( new DishIngredientList( ConstantNumbers.APPLE_PIE_INGREDIENTLIST_ID, 
-                                                                                ConstantNumbers.APPLE_PIE_DISH_ID ) );
-            newDishIngredientLists.Add( new DishIngredientList( ConstantNumbers.MEAT_PIE_INGREDIENTLIST_ID, 
-                                                                                ConstantNumbers.MEAT_PIE_DISH_ID ) );
-            
-            newDishIngredients.Add( GetDishIngredients( db, 
-                                                        ConstantNumbers.APPLE_PIE_INGREDIENTLIST_ID, 
-                                                        new String[]{"Apple", "Sugar", "Flour", "Butter"}));
-            newDishIngredients.Add( GetDishIngredients( db, 
-                                                        ConstantNumbers.MEAT_PIE_INGREDIENTLIST_ID, 
-                                                        new String[]{"Beef", "Sugar", "Flour", "Butter"}));
+            db.SaveChanges();
 
-            // For each new dish, add its DishIngredientList and its DishIngredients to db
-
-            foreach (DishIngredientList dil in newDishIngredientLists)
+            foreach (DishIngredientList dil in ParsedDishIngredientLists)
             {
-                if ( !db.DishIngredientList.Any( i => i.Id == dil.Id ) ) 
+                string dishName = "";
+                try 
+                { 
+                    dishName = ParsedDishes.First(d => d.Id == dil.Dish_ID).Name; 
+                }
+                catch
                 {
-                    Console.WriteLine("Storing the ingredients for " + db.Dishes.First(d => d.Id == dil.Dish_ID).Name);
+                    Console.WriteLine($"No provided dish with name {dil.Dish_ID}");
+                }
+                // If a DishIngredientList doesn't yet exist for this Dish
+                if ( !db.DishIngredientList.Any( i => i.Dish_Name == dishName ) ) 
+                {
+                    Console.WriteLine("Storing the ingredients for " + dishName );
                     db.DishIngredientList.Add(dil);
                 }
-            }
-            foreach (List<DishIngredient> di in newDishIngredients)
-            {
-                // TODO: use update and delete to change ingredients stored in dish ingredients
-                foreach ( DishIngredient item in di ) // add any dish ingredient not already saved
+                else
                 {
-                    if ( !db.DishIngredients.Any( i => i.Id == item.Id && 
-                                                  i.DishIngredientList_ID == item.DishIngredientList_ID ) ) {
-                        db.DishIngredients.Add(item);
-                    }
+                    Console.WriteLine("Error: Tried to overwrite a Dish's exisitng DishIngredientList through Add");
                 }
             }
-
-            // Update DishIngredientList_ID references in dishes
-
-            var applePie = db.Dishes.First(d => d.Id == ConstantNumbers.APPLE_PIE_DISH_ID);
-            applePie.DishIngredientList_ID = ConstantNumbers.APPLE_PIE_INGREDIENTLIST_ID;
-
-            var meatPie = db.Dishes.First(d => d.Id == ConstantNumbers.MEAT_PIE_DISH_ID);
-            meatPie.DishIngredientList_ID = ConstantNumbers.MEAT_PIE_INGREDIENTLIST_ID;
-            
             db.SaveChanges();
+            
+            // TODO: change to use UPDATE on existing DishIngredientList/s if trying ADD with newDishIngredients
+            foreach (DishIngredient di in ParsedDishIngredients)
+            {
+                string dishName = "";
+                DishIngredientList savedDishIngredientList;
+                try 
+                { 
+                    savedDishIngredientList = db.DishIngredientList.First(d => d.Id == di.DishIngredientList_ID); 
+                }
+                catch
+                {
+                    // 
+                }
+                // If DishIngredientList with same DishName exists, change di.DishIngredientList_ID before adding 
+                // DishIngredients to DB, if those ingredients don't already exist on the DishIngredient table
+                // 
+                if ( !db.DishIngredientList.Any(dil=>dil.Id == di.DishIngredientList_ID) )
+                {
+                    Console.WriteLine("Error: Tried to add DishIngredients to a non-existent DishIngredientList through Add");
+                }   
+                else if (db.DishIngredientList.Contains(dil=>dil.Name==di))
+                if ( !db.DishIngredients.Any( i => i.Id == di.Id && 
+                                                i.DishIngredientList_ID == di.DishIngredientList_ID ) ) {
+                    db.DishIngredients.Add(di);
+                }
+            }
+            db.SaveChanges();
+
+
+            // Now that all tables and the tables they depend on have been set up, save them
+            //db.SaveChanges();
+
 
             Console.WriteLine("Menu:");
             foreach (Dish dish in db.Dishes)
@@ -140,44 +127,20 @@ namespace EFTest
             {
                 Console.WriteLine(dish.Name); 
             }
-
-            //from dishes in db.Dishes where dishes.Ingredients.
-
-            // Delete
-            Console.WriteLine("Deleting salad dish from menu");
-            db.Remove(db.Dishes.First(d => d.Id == 01));
+            
+            // Remove salad if it exists
+            try     
+            {    
+                db.Remove(db.Dishes.First(d => d.Id == db.Dishes.First(i =>i.Name == "salad").Id));
+                Console.WriteLine("Deleting salad dish from menu");
+            }
+            catch 
+            {
+                Console.WriteLine("No salad dish on menu, could not delete");
+                return;
+            }
 
             db.SaveChanges();
         }
-        
-        /// <summary>
-        /// Generates and returns a list of DishIngredients associated with a DishIngredientList
-        /// </summary>
-        /// <param name="db">Menu Context object</param>
-        /// <param name="dishIngredientListID"></param>
-        /// <param name="ingredients">Ingredients that should be in the DishIngredientList</param>
-        /// <returns>List of DishIngredients associated with a DishIngredientList</returns>
-    private static List<DishIngredient> GetDishIngredients(MenuContext db, int dishIngredientListID, string[] ingredients)
-        {
-            List<DishIngredient> dishComposition = new List<DishIngredient>();
-            for (int i = 0; i < ingredients.Length; i++)
-            {
-                dishComposition.Add( new DishIngredient( 
-                                        dishIngredientListID, 
-                                        int.Parse(dishIngredientListID.ToString() + (i+1).ToString()), 
-                                        db.Ingredients.First(ing => ing.Name == ingredients[i]).Id ) );
-            }
-            return dishComposition;
-        }
-    }
-
-    public static class ConstantNumbers
-    {
-        public static readonly int SALAD_PIE_DISH_ID = 1;
-        public static readonly int APPLE_PIE_DISH_ID = 2;
-        public static readonly int MEAT_PIE_DISH_ID = 3;
-
-        public static readonly int APPLE_PIE_INGREDIENTLIST_ID = 1;
-        public static readonly int MEAT_PIE_INGREDIENTLIST_ID = 2;
     }
 }
