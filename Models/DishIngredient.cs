@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+namespace MenuAPI.Models;
+
     // Represents an Ingredient inside of a DishIngredientList
     public class DishIngredient 
     {

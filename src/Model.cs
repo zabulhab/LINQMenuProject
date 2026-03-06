@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System.ComponentModel.DataAnnotations;
 using IdGen;
+using MenuAPI.Models;
 
 
 // TODO: Make this implement an interface and replace references to this?

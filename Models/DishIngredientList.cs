@@ -2,8 +2,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MenuAPI
-{
+namespace MenuAPI.Models;
+
     // Collection of DishIngredients
     public class DishIngredientList
     {
@@ -23,4 +23,3 @@ namespace MenuAPI
         }
 
     }
-}

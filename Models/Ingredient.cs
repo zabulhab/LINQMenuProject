@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+namespace MenuAPI.Models;
+
     // Represent most basic component of an IngredientList
     public class Ingredient
     {

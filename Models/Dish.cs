@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
-// Composed of Ingredients obtainable through DishIngredientList
-public class Dish
+namespace MenuAPI.Models;
+
+    // Composed of Ingredients obtainable through DishIngredientList
+    public class Dish
     {
         [Key,DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long Id { get; private set; }
