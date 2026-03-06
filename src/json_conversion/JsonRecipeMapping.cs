@@ -2,7 +2,7 @@
 // represent the JSON's structure for later use in building db sets
 using System.Collections.Generic;
 
-namespace EFTest
+namespace MenuAPI
 {
     public class JsonRecipeMapping
     {

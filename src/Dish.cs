@@ -15,7 +15,7 @@ public class Dish
 
         public Dish( string name = null )
         {
-            Id = EFTest.MenuContext.IdGenerator.CreateId();
+            Id = MenuAPI.MenuContext.IdGenerator.CreateId();
             if (name != null) Name = name;
         }
     }

@@ -11,7 +11,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
         public DishIngredient( long dishIngredientList_ID, long ingredient_ID ) 
         {
-            Id = EFTest.MenuContext.IdGenerator.CreateId();
+            Id = MenuAPI.MenuContext.IdGenerator.CreateId();
             DishIngredientList_ID = dishIngredientList_ID;
             Ingredient_ID = ingredient_ID;
          }

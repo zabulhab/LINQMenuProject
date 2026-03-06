@@ -4,7 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using System.ComponentModel.DataAnnotations;
 using IdGen;
 
-namespace EFTest
+
+// TODO: Make this implement an interface and replace references to this?
+namespace MenuAPI
 {
     public class MenuContext : DbContext
     {

@@ -18,7 +18,7 @@ using System.ComponentModel.DataAnnotations.Schema;
  
         public Ingredient( string name = null )
         {
-            Id = EFTest.MenuContext.IdGenerator.CreateId();
+            Id = MenuAPI.MenuContext.IdGenerator.CreateId();
             if (name != null) Name = name;
         }
 

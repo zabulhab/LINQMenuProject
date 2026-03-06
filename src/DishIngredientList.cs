@@ -2,6 +2,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
+namespace MenuAPI
+{
     // Collection of DishIngredients
     public class DishIngredientList
     {
@@ -16,8 +18,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
         public DishIngredientList(long dish_ID )
         {
-            Id = EFTest.MenuContext.IdGenerator.CreateId();
+            Id = MenuAPI.MenuContext.IdGenerator.CreateId();
             Dish_ID = dish_ID;
         }
 
     }
+}

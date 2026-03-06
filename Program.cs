@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 // TODO: use update and delete to change ingredients stored in dish ingredients
 // TODO: Add OnDelete to foreign keys in table defs
 // My first time using the Entity Framework with LINQ queries
-namespace EFTest
+namespace MenuAPI
 {
 
     class Program

@@ -4,10 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using EFTest;
+using MenuAPI;
 using System.Linq;
 
-namespace EFTest
+namespace MenuAPI
 {
     public static class RecipeParser
     {
@@ -19,7 +19,7 @@ namespace EFTest
         /// <returns>Lists containing parsed dishes, ingredients, etc.</returns>
         public static 
             (List<Dish>, List<Ingredient>, List<DishIngredientList>, List<DishIngredient>)
-            GetDishesAndIngredients( string filepath, EFTest.MenuContext mc )
+            GetDishesAndIngredients( string filepath, MenuAPI.MenuContext mc )
         {
             // read file json into continous string
             string text = "";

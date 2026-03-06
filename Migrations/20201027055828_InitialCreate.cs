@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace EFTest.Migrations
+namespace MenuAPI.Migrations
 {
     public partial class InitialCreate : Migration
     {
