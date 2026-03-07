@@ -1,0 +1,5 @@
+[*.cs]
+
+# Suppress warning that falsely states against C# naming conventions that 
+# private fields shouldn't start with an underscore 
+dotnet_diagnostic.IDE1006.severity = none

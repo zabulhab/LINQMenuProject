@@ -15,16 +15,19 @@ namespace MenuAPI
     {
         static void Main(string[]? args)
         {
-            if (args != null)
-            {
-                ConsoleProgram(args);    
-                return;           
-            }
+            // if (args != null)
+            // {
+            //     ConsoleProgram(args);    
+            //     return;           
+            // }
 
-            var builder = WebApplication.CreateBuilder();
+            var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddDbContext<MenuContext>(opt =>
+                // opt.UseInMemoryDatabase("Recipes"));
+                opt.UseSqlite("Recipes"));
 
             // Add services to the container.
-
+ 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

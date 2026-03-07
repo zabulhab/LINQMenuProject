@@ -5,21 +5,33 @@ using Microsoft.AspNetCore.Mvc;
 namespace MenuAPI.Controllers;
 
 [ApiController]
+// [Route("Ingredient")]
 [Route("[controller]")]
 public class IngredientController : ControllerBase
 {
 
-    public IngredientController(){}
+    public IngredientController(MenuContext menuContext)
+    { 
+        _ingredientService = new IngredientService(menuContext);
+    }
+    private readonly IMenuService<Ingredient> _ingredientService;
 
     [HttpGet]
-    public ActionResult<List<Ingredient>> GetAll() =>
-        IngredientService.GetAll();
+    public ActionResult<IEnumerable<Ingredient>> GetAll()
+    {
+        var all = _ingredientService.GetAll();
+        if ( _ingredientService.GetAll() != null )
+        {
+            return all.ToList();
+        }
+        else return NoContent();
+    }
 
 
     [HttpGet("{id}")]
     public ActionResult<Ingredient> Get(long id)
     {
-        var ingredient = IngredientService.Get(id);
+        var ingredient = _ingredientService.Get(id);
 
         if(ingredient == null)
             return NotFound();
@@ -30,7 +42,7 @@ public class IngredientController : ControllerBase
     [HttpPost]
     public IActionResult Create(Ingredient ingredient)
     {            
-        IngredientService.Add(ingredient);
+        _ingredientService.Add(ingredient);
         return CreatedAtAction(nameof(Get), new { id = ingredient.Id }, ingredient);
     }
 
@@ -40,11 +52,11 @@ public class IngredientController : ControllerBase
         if (id != ingredient.Id)
             return BadRequest();
             
-        var existingIngredient = IngredientService.Get(id);
+        var existingIngredient = _ingredientService.Get(id);
         if(existingIngredient is null)
             return NotFound();
     
-        IngredientService.Update(ingredient);           
+        _ingredientService.Update(ingredient);           
     
         return NoContent();
     }
@@ -52,12 +64,12 @@ public class IngredientController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult Delete(long id)
     {
-        var ingredient = IngredientService.Get(id);
+        var ingredient = _ingredientService.Get(id);
     
         if (ingredient is null)
             return NotFound();
         
-        IngredientService.Delete(id);
+        _ingredientService.Delete(id);
     
         return NoContent();
     }

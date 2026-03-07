@@ -23,6 +23,10 @@ public class MenuContext : DbContext
     {
         IdGenerator = new IdGenerator(0);
     }
+    public MenuContext(DbContextOptions<MenuContext> options): base(options)
+    {
+        IdGenerator = new IdGenerator(0);
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

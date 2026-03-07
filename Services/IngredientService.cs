@@ -1,25 +1,33 @@
 using MenuAPI.Models;
 
 namespace MenuAPI.Services;
+using Microsoft.EntityFrameworkCore;
 
-public static class IngredientService
+public class IngredientService: IMenuService<Ingredient>
 {   
-    static List<Ingredient> Ingredients{ get; }
-    static IngredientService()
+    private List<Ingredient>? Ingredients{ get; }
+    private MenuContext _menuContext { get; }
+
+    public IngredientService(MenuContext menuContext)
     {
+        _menuContext = menuContext;
         Ingredients = new List<Ingredient>();
+        
     }
-    public static List<Ingredient> GetAll() => Ingredients;
+    public IEnumerable<Ingredient> GetAll()
+    {
+        return _menuContext.Ingredients;
+    }
 
-    public static Ingredient? Get(long id) => Ingredients.FirstOrDefault(d => d.Id == id);
+    public Ingredient? Get(long id) => Ingredients.FirstOrDefault(d => d.Id == id);
 
-    public static void Add(Ingredient ingredient)
+    public void Add(Ingredient ingredient)
     {
         ingredient.Id = MenuContext.IdGenerator.CreateId();
         Ingredients.Add(ingredient);
     }
 
-    public static void Delete(long id)
+    public void Delete(long id)
     {
         var ingredient = Get(id);
         if(ingredient is null)
@@ -29,7 +37,7 @@ public static class IngredientService
         Ingredients.Remove(ingredient);
     }
 
-    public static void Update(Ingredient ingredient)
+    public void Update(Ingredient ingredient)
     {
         // TODO: change to use db
         var index = Ingredients.FindIndex(d => d.Id == ingredient.Id);
