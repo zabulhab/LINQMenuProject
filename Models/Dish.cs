@@ -5,19 +5,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MenuAPI.Models;
 
-    // Composed of Ingredients obtainable through DishIngredientList
-    public class Dish
+// Composed of Ingredients obtainable through DishIngredientList
+public class Dish
+{
+    [Key,DatabaseGenerated(DatabaseGeneratedOption.None)]
+    public long Id { get; set; }
+    public string Name { get; set; }
+
+    // removed to avoid circular dependency
+    //public long DishIngredientList_ID { get; set; }
+
+    public Dish( string name = null )
     {
-        [Key,DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public long Id { get; private set; }
-        public string Name { get; set; }
-
-        // removed to avoid circular dependency
-        //public long DishIngredientList_ID { get; set; }
-
-        public Dish( string name = null )
-        {
-            Id = MenuAPI.MenuContext.IdGenerator.CreateId();
-            if (name != null) Name = name;
-        }
+        Id = MenuContext.IdGenerator.CreateId();
+        if (name != null) Name = name;
     }
+}

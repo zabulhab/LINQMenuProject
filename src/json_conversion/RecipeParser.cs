@@ -19,7 +19,7 @@ namespace MenuAPI
         /// <returns>Lists containing parsed dishes, ingredients, etc.</returns>
         public static 
             (List<Dish>, List<Ingredient>, List<DishIngredientList>, List<DishIngredient>)
-            GetDishesAndIngredients( string filepath, MenuAPI.MenuContext mc )
+            GetDishesAndIngredients( string filepath, MenuContext mc )
         {
             // read file json into continous string
             string text = "";

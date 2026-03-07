@@ -1,0 +1,40 @@
+@MenuAPI_HostAddress = http://localhost:5064
+
+GET {{MenuAPI_HostAddress}}/dish/
+Accept: application/json
+
+###
+
+GET {{MenuAPI_HostAddress}}/dish/
+Accept: application/json
+
+###
+
+GET {{MenuAPI_HostAddress}}/dish/1
+Accept: application/json
+
+###
+
+POST {{MenuAPI_HostAddress}}/ingredient/
+Content-Type: application/json
+
+{
+    "name": "Hawaii",
+    "isGlutenFree": true
+}
+
+###
+
+PUT {{MenuAPI_HostAddress}}/dish/3
+Content-Type: application/json
+
+{
+    "Id": 3,
+    "Name": "Hawaiian"
+}
+
+###
+
+DELETE {{MenuAPI_HostAddress}}/dish/3
+
+###
