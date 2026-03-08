@@ -1,18 +1,20 @@
 namespace MenuAPI.Services;
 using Microsoft.EntityFrameworkCore;
+using MenuAPI.DTOs;
 
 // Interface for common methods needed by Dishes, Ingredients, and other kinds of DBSets in a MenuContext
 // within the context of a Web API service
 public interface IMenuService<T>
 {
-    public IEnumerable<T> GetAll();
+    public List<T> GetAll();
 
     public T? Get(long id);
 
-    public void Add(T t);
+    public T Add(IMenuAPICreateDTO dto);
 
-    public void Update(T t);
+    // TODO: Change to return (non-http) exception types
+    public int Update(UpdateIngredientDTO dto);
 
-    public void Delete(long id);
+    public int Delete(long id);
 
 }

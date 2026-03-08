@@ -7,3 +7,10 @@ Dishes store their name and ID
 DishIngredientLists have a foreign key referencing their Dish_ID.
 DishIngredients have a foreign key referencing an Ingredient and a foreign key referencing a DishIngredientList.
 Ingredients store only their ID, name, and allergen info.
+
+Usage: 
+run API normally: 
+dotnet watch, dotnet run watch
+read in input from a json file to fill in the sqlite database before running the API: 
+dotnet watch --[json file name, e.g. --sampleinput.json] 
+dotnet run watch --[json file name, e.g. --sampleinput.json] 

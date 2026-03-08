@@ -1,6 +1,7 @@
 using MenuAPI.Models;
 using MenuAPI.Services;
 using Microsoft.AspNetCore.Mvc;
+using MenuAPI.DTOs;
 
 namespace MenuAPI.Controllers;
 
@@ -19,12 +20,7 @@ public class IngredientController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<Ingredient>> GetAll()
     {
-        var all = _ingredientService.GetAll();
-        if ( _ingredientService.GetAll() != null )
-        {
-            return all.ToList();
-        }
-        else return NoContent();
+        return _ingredientService.GetAll();
     }
 
 
@@ -40,23 +36,23 @@ public class IngredientController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Create(Ingredient ingredient)
+    public IActionResult Create([FromBody] CreateIngredientDTO dto)
     {            
-        _ingredientService.Add(ingredient);
-        return CreatedAtAction(nameof(Get), new { id = ingredient.Id }, ingredient);
+        Ingredient? createdIngredient = _ingredientService.Add(dto);
+        if ( createdIngredient == null )
+        {
+            return BadRequest("Ingredient could not be created.");
+        }
+        return Ok(createdIngredient);
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(long id, Ingredient ingredient)
+    public IActionResult Update(long id, UpdateIngredientDTO dto)
     {
-        if (id != ingredient.Id)
+        if (id != dto.Id)
             return BadRequest();
             
-        var existingIngredient = _ingredientService.Get(id);
-        if(existingIngredient is null)
-            return NotFound();
-    
-        _ingredientService.Update(ingredient);           
+        _ingredientService.Update(dto);      
     
         return NoContent();
     }
@@ -64,9 +60,9 @@ public class IngredientController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult Delete(long id)
     {
-        var ingredient = _ingredientService.Get(id);
+        int result = _ingredientService.Delete(id);
     
-        if (ingredient is null)
+        if (result == 1)
             return NotFound();
         
         _ingredientService.Delete(id);

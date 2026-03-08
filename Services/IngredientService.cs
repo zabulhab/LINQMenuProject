@@ -1,50 +1,93 @@
 using MenuAPI.Models;
 
 namespace MenuAPI.Services;
+
+using IdGen;
+using MenuAPI.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 public class IngredientService: IMenuService<Ingredient>
 {   
-    private List<Ingredient>? Ingredients{ get; }
     private MenuContext _menuContext { get; }
-
     public IngredientService(MenuContext menuContext)
     {
         _menuContext = menuContext;
-        Ingredients = new List<Ingredient>();
         
     }
-    public IEnumerable<Ingredient> GetAll()
+    public List<Ingredient> GetAll()
     {
-        return _menuContext.Ingredients;
+        return _menuContext.Ingredients.ToList();
     }
 
-    public Ingredient? Get(long id) => Ingredients.FirstOrDefault(d => d.Id == id);
+    public Ingredient? Get(long id) => _menuContext.Ingredients.FirstOrDefault(d => d.Id == id);
 
-    public void Add(Ingredient ingredient)
+    public Ingredient Add(IMenuAPICreateDTO dto)
     {
-        ingredient.Id = MenuContext.IdGenerator.CreateId();
-        Ingredients.Add(ingredient);
+        CreateIngredientDTO ing_dto;
+        try { ing_dto = (CreateIngredientDTO)dto; }
+        catch 
+        { 
+            Console.WriteLine("Error: Cannot add Ingredient; controller passed in an unexpected format"); 
+            return null!;
+        }
+        Ingredient ingredient = new Ingredient
+        {
+            Name = ing_dto.Name,
+            AllergenDairy = (AllergenStatusBool)ing_dto.AllergenDairy!,
+            AllergenGluten = (AllergenStatusBool)ing_dto.AllergenGluten!,
+            AllergenMeat = (AllergenStatusBool)ing_dto.AllergenMeat!,
+            AllergenNut = (AllergenStatusBool)ing_dto.AllergenNut!,
+            AllergenSesame = (AllergenStatusBool)ing_dto.AllergenSesame!,
+            AllergenSpicy = (AllergenStatusBool)ing_dto.AllergenSpicy!
+        };
+        
+        _menuContext.Ingredients.Add(ingredient);
+        _menuContext.SaveChanges();
+        return ingredient;
     }
 
-    public void Delete(long id)
+    public int Update(UpdateIngredientDTO dto)
     {
-        var ingredient = Get(id);
-        if(ingredient is null)
-            return;
+        UpdateIngredientDTO ing_dto;
+        try { ing_dto = (UpdateIngredientDTO)dto; }
+        catch 
+        { 
+            Console.WriteLine("Error: Cannot add Ingredient; controller passed in an unexpected format"); 
+            return 2;
+        }
+        Ingredient ingredient = new Ingredient
+        {
+            Id = dto.Id,
+            Name = ing_dto.Name?? "",
+            AllergenDairy = (AllergenStatusBool)ing_dto.AllergenDairy!,
+            AllergenGluten = (AllergenStatusBool)ing_dto.AllergenGluten!,
+            AllergenMeat = (AllergenStatusBool)ing_dto.AllergenMeat!,
+            AllergenNut = (AllergenStatusBool)ing_dto.AllergenNut!,
+            AllergenSesame = (AllergenStatusBool)ing_dto.AllergenSesame!,
+            AllergenSpicy = (AllergenStatusBool)ing_dto.AllergenSpicy!
+        };
 
-        // TODO: cascading delete
-        Ingredients.Remove(ingredient);
+        Ingredient? existingIngredient = _menuContext.Ingredients.Find(ingredient.Id);
+        if(existingIngredient is null)
+        {
+            Console.WriteLine($"Cannot update; Ingredient with Id {ingredient.Id} does not exist on database");
+            return 1;            
+        }
+        _menuContext.Entry(existingIngredient).CurrentValues.SetValues(ingredient);
+        _menuContext.SaveChanges();
+        return 0;
     }
 
-    public void Update(Ingredient ingredient)
+    public int Delete(long id)
     {
-        // TODO: change to use db
-        var index = Ingredients.FindIndex(d => d.Id == ingredient.Id);
-        if(index == -1)
-            return;
+        Ingredient? existingIngredient = _menuContext.Ingredients.Find(id);
+        if(existingIngredient is null)
+            return 1;
 
-        Ingredients[index] = ingredient;
+        // TODO: cascading delete?
+        _menuContext.Ingredients.Remove(existingIngredient);
+        _menuContext.SaveChanges();
+        return 0;
     }
 
 }

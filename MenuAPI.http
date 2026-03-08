@@ -1,11 +1,36 @@
 @MenuAPI_HostAddress = http://localhost:5064
 
-GET {{MenuAPI_HostAddress}}/Dish/
-Accept: application/json
-
-###
+### Get all Ingredients
 GET {{MenuAPI_HostAddress}}/Ingredient/
 Accept: application/json
+
+### Get Ingredient
+GET {{MenuAPI_HostAddress}}/Ingredient/2
+Accept: application/json
+
+### Create new Ingredient
+
+POST {{MenuAPI_HostAddress}}/Ingredient/
+Content-Type: application/json
+
+{
+    "Name": "Milk",
+    "AllergenDairy": 1
+}
+
+### Update Ingredient Name
+
+PUT {{MenuAPI_HostAddress}}/Ingredient/1480215937431896064
+Content-Type: application/json
+
+{
+    "Id" : 1480215937431896064,
+    "Name": "NewMilk"
+}
+
+### Delete Ingredient
+
+DELETE {{MenuAPI_HostAddress}}/Ingredient/1480239263365726215
 
 ###
 
@@ -16,16 +41,6 @@ Accept: application/json
 
 GET {{MenuAPI_HostAddress}}/Dish/1
 Accept: application/json
-
-###
-
-POST {{MenuAPI_HostAddress}}/Ingredient/
-Content-Type: application/json
-
-{
-    "Name": "Hawaii",
-    "isGlutenFree": true
-}
 
 ###
 

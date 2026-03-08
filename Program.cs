@@ -15,11 +15,28 @@ namespace MenuAPI
     {
         static void Main(string[]? args)
         {
-            // if (args != null)
-            // {
-            //     ConsoleProgram(args);    
-            //     return;           
-            // }
+            if (args != null)
+            {
+                List<string>? optionalArgs = args.Where(arg => arg.StartsWith("--")).ToList();
+                if ( optionalArgs is not null)
+                {
+                    foreach (string arg in optionalArgs)
+                    {
+                        if (arg[^5..] == ".json")
+                        {
+                            string filename = arg[2..]; // exclude --
+                            Console.WriteLine($"Trying to load recipes from {filename}");
+                            try { ConsoleProgram(filename); }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e);
+                                Console.WriteLine($"Could not read file {filename}");
+                                return;
+                            }  
+                        }
+                    }
+                }
+            }  
 
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddDbContext<MenuContext>(opt =>
@@ -52,16 +69,16 @@ namespace MenuAPI
 
         }
 
-        private static void ConsoleProgram(string[] args)
+        private static void ConsoleProgram(string arg)
         {   
             MenuContext db;
-            if (args.Length == 0)
-            {
-                Console.WriteLine("Error: Please provide input recipe file");
-                return;
-            }
+            // if (args.Length == 0)
+            // {
+            //     Console.WriteLine("Error: Please provide input recipe file");
+            //     return;
+            // }
 
-            string filepath = args[0];
+            string filepath = arg;
             db = new MenuContext();
             (List<Dish> ParsedDishes,
             List<Ingredient> ParsedIngredients,
