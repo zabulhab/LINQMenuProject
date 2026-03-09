@@ -71,15 +71,10 @@ namespace MenuAPI
 
         private static void ConsoleProgram(string arg)
         {   
-            MenuContext db;
-            // if (args.Length == 0)
-            // {
-            //     Console.WriteLine("Error: Please provide input recipe file");
-            //     return;
-            // }
-
             string filepath = arg;
+            MenuContext db;
             db = new MenuContext();
+
             (List<Dish> ParsedDishes,
             List<Ingredient> ParsedIngredients,
             List<DishIngredientList> ParsedDishIngredientLists,
@@ -149,11 +144,6 @@ namespace MenuAPI
                 }
             }
             db.SaveChanges();
-
-
-            // Now that all tables and the tables they depend on have been set up, save them
-            //db.SaveChanges();
-
 
             Console.WriteLine("Menu:");
             foreach (Dish dish in db.Dishes)

@@ -1,10 +1,8 @@
 using MenuAPI.Models;
+using MenuAPI.DTOs;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson;
 
 namespace MenuAPI.Services;
-
-using IdGen;
-using MenuAPI.DTOs;
-using Microsoft.EntityFrameworkCore;
 
 public class IngredientService: IMenuService<Ingredient>
 {   
@@ -21,7 +19,7 @@ public class IngredientService: IMenuService<Ingredient>
 
     public Ingredient? Get(long id) => _menuContext.Ingredients.FirstOrDefault(d => d.Id == id);
 
-    public Ingredient Add(IMenuAPICreateDTO dto)
+    public Ingredient Add(IMenuAPICreateDTO<Ingredient> dto)
     {
         CreateIngredientDTO ing_dto;
         try { ing_dto = (CreateIngredientDTO)dto; }
@@ -46,18 +44,19 @@ public class IngredientService: IMenuService<Ingredient>
         return ingredient;
     }
 
-    public int Update(UpdateIngredientDTO dto)
+    public int Overwrite(IMenuAPIUpdateDTO<Ingredient> dto)
     {
         UpdateIngredientDTO ing_dto;
         try { ing_dto = (UpdateIngredientDTO)dto; }
         catch 
         { 
-            Console.WriteLine("Error: Cannot add Ingredient; controller passed in an unexpected format"); 
+            Console.WriteLine("Error: Cannot update Ingredient; controller passed in an unexpected format"); 
             return 2;
         }
+
         Ingredient ingredient = new Ingredient
         {
-            Id = dto.Id,
+            Id = ing_dto.Id,
             Name = ing_dto.Name?? "",
             AllergenDairy = (AllergenStatusBool)ing_dto.AllergenDairy!,
             AllergenGluten = (AllergenStatusBool)ing_dto.AllergenGluten!,
@@ -76,6 +75,20 @@ public class IngredientService: IMenuService<Ingredient>
         _menuContext.Entry(existingIngredient).CurrentValues.SetValues(ingredient);
         _menuContext.SaveChanges();
         return 0;
+    }
+
+    public Ingredient Update(long id, JsonPatchDocument<Ingredient> patchDoc)
+    {
+        Ingredient? existingIngredient = _menuContext.Ingredients.Find(id);
+        if(existingIngredient is null)
+        {
+            Console.WriteLine($"Cannot update; Ingredient with Id {id} does not exist on database");
+            return null!;           
+        }
+        // TODO: Return errors using ModelState, meaning make method return IActionResult...
+        patchDoc.ApplyTo(existingIngredient);
+        _menuContext.SaveChanges();
+        return existingIngredient;
     }
 
     public int Delete(long id)

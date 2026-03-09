@@ -1,6 +1,6 @@
 namespace MenuAPI.DTOs;
 
-public interface IMenuAPICreateDTO
+public interface IMenuAPICreateDTO<T>
 {
 
 }

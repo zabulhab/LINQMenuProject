@@ -2,6 +2,7 @@ using MenuAPI.Models;
 using MenuAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using MenuAPI.DTOs;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson;
 
 namespace MenuAPI.Controllers;
 
@@ -47,14 +48,22 @@ public class IngredientController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(long id, UpdateIngredientDTO dto)
+    public IActionResult Overwrite(long id, [FromBody] UpdateIngredientDTO dto)
     {
         if (id != dto.Id)
             return BadRequest();
             
-        _ingredientService.Update(dto);      
+        _ingredientService.Overwrite(dto);      
     
         return NoContent();
+    }
+
+    // Apply only requested changes, do not overwrite existing data
+    [HttpPatch("{id}")]
+    public IActionResult Update(long id, [FromBody] JsonPatchDocument<Ingredient> patchDoc)
+    {
+        Ingredient? updatedIngredient = _ingredientService.Update(id, patchDoc);
+        return Ok(updatedIngredient);
     }
 
     [HttpDelete("{id}")]

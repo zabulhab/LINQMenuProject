@@ -4,12 +4,11 @@
 GET {{MenuAPI_HostAddress}}/Ingredient/
 Accept: application/json
 
-### Get Ingredient
+### Get specific Ingredient
 GET {{MenuAPI_HostAddress}}/Ingredient/2
 Accept: application/json
 
 ### Create new Ingredient
-
 POST {{MenuAPI_HostAddress}}/Ingredient/
 Content-Type: application/json
 
@@ -18,42 +17,72 @@ Content-Type: application/json
     "AllergenDairy": 1
 }
 
-### Update Ingredient Name
-
+### Overwrite Ingredient (all blanks besides Id)
 PUT {{MenuAPI_HostAddress}}/Ingredient/1480215937431896064
 Content-Type: application/json
 
 {
-    "Id" : 1480215937431896064,
-    "Name": "NewMilk"
+    "Id" : 1480215937431896064
 }
 
+
+### Overwrite only Ingredient name
+PATCH  {{MenuAPI_HostAddress}}/Ingredient/2
+Content-Type: application/json-patch+json
+Accept: application/json
+
+[
+  {
+    "op": "replace",
+    "path": "/Name",
+    "value": "Walnut"
+  }
+]
+
 ### Delete Ingredient
+DELETE {{MenuAPI_HostAddress}}/Ingredient/3
 
-DELETE {{MenuAPI_HostAddress}}/Ingredient/1480239263365726215
 
-###
 
+
+
+
+### Get all Dishes
 GET {{MenuAPI_HostAddress}}/Dish/
 Accept: application/json
 
-###
-
-GET {{MenuAPI_HostAddress}}/Dish/1
+### Get specific Dish
+GET {{MenuAPI_HostAddress}}/Dish/111
 Accept: application/json
 
-###
-
-PUT {{MenuAPI_HostAddress}}/Dish/3
+### Create new Dish
+POST {{MenuAPI_HostAddress}}/Dish/
 Content-Type: application/json
 
 {
-    "Id": 3,
-    "Name": "Hawaiian"
+    "Name": "NewDish"
 }
 
-###
+### Overwrite Dish (all blanks besides Id)
+PUT {{MenuAPI_HostAddress}}/Dish/111
+Content-Type: application/json
 
-DELETE {{MenuAPI_HostAddress}}/Dish/3
+{
+    "Id": 111
+}
 
-###
+### Update only Dish name
+PATCH {{MenuAPI_HostAddress}}/Dish/111
+Content-Type: application/json-patch+json
+Accept: application/json
+
+[
+  {
+    "op": "replace",
+    "path": "/Name",
+    "value": "YummyDish"
+  }
+]
+
+### Delete Dish
+DELETE {{MenuAPI_HostAddress}}/Dish/111

@@ -1,42 +1,93 @@
 using MenuAPI.Models;
+using MenuAPI.DTOs;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson;
+
 
 namespace MenuAPI.Services;
 
-public static class DishService
-{   
-    static List<Dish> Dishes{ get; }
-    static DishService()
+public class DishService : IMenuService<Dish>
+{
+    private MenuContext _menuContext { get; }
+    public DishService(MenuContext menuContext)
     {
-        Dishes = new List<Dish>();
+        _menuContext = menuContext;
     }
-    public static List<Dish> GetAll() => Dishes;
-
-    public static Dish? Get(long id) => Dishes.FirstOrDefault(d => d.Id == id);
-
-    public static void Add(Dish dish)
+    public List<Dish> GetAll()
     {
-        dish.Id = MenuContext.IdGenerator.CreateId();
-        Dishes.Add(dish);
+        return _menuContext.Dishes.ToList();
     }
 
-    public static void Delete(long id)
-    {
-        var dish = Get(id);
-        if(dish is null)
-            return;
+    public Dish? Get(long id) => _menuContext.Dishes.FirstOrDefault(d => d.Id == id);
 
-        // TODO: cascading delete
-        Dishes.Remove(dish);
+    public Dish Add(IMenuAPICreateDTO<Dish> dto)
+    {
+        CreateDishDTO d_dto;
+        try { d_dto = (CreateDishDTO)dto; }
+        catch
+        {
+            Console.WriteLine("Error: Cannot add Dish; controller passed in an unexpected format");
+            return null!;
+        }
+        Dish dish = new Dish
+        {
+            Name = d_dto.Name
+        };
+
+        _menuContext.Dishes.Add(dish);
+        _menuContext.SaveChanges();
+        return dish;
     }
 
-    public static void Update(Dish dish)
+    public int Overwrite(IMenuAPIUpdateDTO<Dish> dto)
     {
-        // TODO: change to use db
-        var index = Dishes.FindIndex(d => d.Id == dish.Id);
-        if(index == -1)
-            return;
+        UpdateDishDTO d_dto;
+        try { d_dto = (UpdateDishDTO)dto; }
+        catch
+        {
+            Console.WriteLine("Error: Cannot update Dish; controller passed in an unexpected format");
+            return 2;
+        }
+        Dish dish = new Dish
+        {
+            Id = d_dto.Id,
+            Name = d_dto.Name ?? "",
+        };
 
-        Dishes[index] = dish;
+        Dish? existingDish = _menuContext.Dishes.Find(dish.Id);
+        if (existingDish is null)
+        {
+            Console.WriteLine($"Cannot update; Dish with Id {dish.Id} does not exist on database");
+            return 1;
+        }
+        _menuContext.Entry(existingDish).CurrentValues.SetValues(dish);
+        _menuContext.SaveChanges();
+        return 0;
+    }
+
+    public Dish Update(long id, JsonPatchDocument<Dish> patchDoc)
+    {
+        Dish? existingDish = _menuContext.Dishes.Find(id); // Fetch existing
+        if (existingDish is null)
+        {
+            Console.WriteLine($"Cannot update; Dish with Id {id} does not exist on database");
+            return null!;
+        }
+        // TODO: Return errors using ModelState, meaning make method return IActionResult...
+        patchDoc.ApplyTo(existingDish); 
+        _menuContext.SaveChanges();
+        return existingDish;
+    }
+
+    public int Delete(long id)
+    {
+        Dish? existingDish = _menuContext.Dishes.Find(id);
+        if (existingDish is null)
+            return 1;
+
+        // TODO: cascading delete?
+        _menuContext.Dishes.Remove(existingDish);
+        _menuContext.SaveChanges();
+        return 0;
     }
 
 }

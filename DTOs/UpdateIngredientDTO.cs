@@ -1,5 +1,7 @@
+using MenuAPI.Models;
+
 namespace MenuAPI.DTOs;
-public class UpdateIngredientDTO: IMenuAPIUpdateDTO
+public class UpdateIngredientDTO: IMenuAPIUpdateDTO<Ingredient>
 {
     public required long Id { get; set; }
     public string? Name { get; set; }

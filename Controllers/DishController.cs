@@ -1,6 +1,8 @@
 using MenuAPI.Models;
 using MenuAPI.Services;
 using Microsoft.AspNetCore.Mvc;
+using MenuAPI.DTOs;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson;
 
 namespace MenuAPI.Controllers;
 
@@ -9,17 +11,23 @@ namespace MenuAPI.Controllers;
 public class DishController : ControllerBase
 {
 
-    public DishController(){}
+    public DishController(MenuContext menuContext)
+    { 
+        _dishService = new DishService(menuContext);
+    }
+    private readonly IMenuService<Dish> _dishService;
 
     [HttpGet]
-    public ActionResult<List<Dish>> GetAll() =>
-        DishService.GetAll();
+    public ActionResult<IEnumerable<Dish>> GetAll()
+    {
+        return _dishService.GetAll();
+    }
 
 
     [HttpGet("{id}")]
     public ActionResult<Dish> Get(long id)
     {
-        var dish = DishService.Get(id);
+        var dish = _dishService.Get(id);
 
         if(dish == null)
             return NotFound();
@@ -28,36 +36,43 @@ public class DishController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Create(Dish dish)
+    public IActionResult Create([FromBody] CreateDishDTO dto)
     {            
-        DishService.Add(dish);
-        return CreatedAtAction(nameof(Get), new { id = dish.Id }, dish);
+        Dish? createdDish = _dishService.Add(dto);
+        if ( createdDish == null )
+        {
+            return BadRequest("Dish could not be created.");
+        }
+        return Ok(createdDish);
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(long id, Dish dish)
+    public IActionResult Overwrite(long id, [FromBody] UpdateDishDTO dto)
     {
-        if (id != dish.Id)
+        if (id != dto.Id)
             return BadRequest();
             
-        var existingDish = DishService.Get(id);
-        if(existingDish is null)
-            return NotFound();
-    
-        DishService.Update(dish);           
+        _dishService.Overwrite(dto);      
     
         return NoContent();
+    }
+
+    [HttpPatch("{id}")]
+    public IActionResult Update(long id, [FromBody] JsonPatchDocument<Dish> patchDoc)
+    {
+        Dish? updatedDish = _dishService.Update(id, patchDoc);
+        return Ok(updatedDish);
     }
 
     [HttpDelete("{id}")]
     public IActionResult Delete(long id)
     {
-        var dish = DishService.Get(id);
+        int result = _dishService.Delete(id);
     
-        if (dish is null)
+        if (result == 1)
             return NotFound();
         
-        DishService.Delete(id);
+        _dishService.Delete(id);
     
         return NoContent();
     }
