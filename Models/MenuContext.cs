@@ -13,8 +13,7 @@ public class MenuContext : DbContext
     public DbSet<DishIngredientList> DishIngredientList { get; set; }
     public DbSet<DishIngredient> DishIngredients { get; set; }
     public DbSet<Ingredient> Ingredients { get; set; }
-    public readonly List<string> Allergens = new List<string>()
-        {"Dairy", "Gluten", "Meat", "Nut", "Sesame", "Spicy"};
+    public static readonly List<string> Allergens = ["Dairy", "Gluten", "Meat", "Nut", "Sesame", "Spicy"];
 
     // Snowflake ID generator
     public static IdGenerator IdGenerator { get; private set; } = null!;

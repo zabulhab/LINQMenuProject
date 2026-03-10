@@ -151,31 +151,31 @@ namespace MenuAPI
                 Console.WriteLine(dish.Name);
             }
 
-            // Get food with gluten
-            var glutenIngredients = db.Ingredients.Where(i => i.AllergenGluten == AllergenStatusBool.Yes);
-            var glutenDishIngredients = db.DishIngredients.Where(di => glutenIngredients.Any(i => i.Id == di.Ingredient_ID) == true);
-            var glutenDishIngredientLists = db.DishIngredientList.Where(dil => glutenDishIngredients.Any(i => i.DishIngredientList_ID == dil.Id));
-            var glutenDishes = db.Dishes.Where(d => glutenDishIngredientLists.Any(i => i.Dish_ID == d.Id));
+            // // Get food with gluten
+            // var glutenIngredients = db.Ingredients.Where(i => i.AllergenGluten == AllergenStatusBool.Yes);
+            // var glutenDishIngredients = db.DishIngredients.Where(di => glutenIngredients.Any(i => i.Id == di.Ingredient_ID) == true);
+            // var glutenDishIngredientLists = db.DishIngredientList.Where(dil => glutenDishIngredients.Any(i => i.DishIngredientList_ID == dil.Id));
+            // var glutenDishes = db.Dishes.Where(d => glutenDishIngredientLists.Any(i => i.Dish_ID == d.Id));
 
-            Console.WriteLine("Gluten-containing Dishes:");
-            foreach (var dish in glutenDishes)
-            {
-                Console.WriteLine(dish.Name);
-            }
+            // Console.WriteLine("Gluten-containing Dishes:");
+            // foreach (var dish in glutenDishes)
+            // {
+            //     Console.WriteLine(dish.Name);
+            // }
 
-            // Remove salad if it exists
-            try
-            {
-                db.Remove(db.Dishes.First(d => d.Id == db.Dishes.First(i => i.Name == "salad").Id));
-                Console.WriteLine("Deleting salad dish from menu");
-            }
-            catch
-            {
-                Console.WriteLine("No salad dish on menu, could not delete");
-                return;
-            }
+            // // Remove salad if it exists
+            // try
+            // {
+            //     db.Remove(db.Dishes.First(d => d.Id == db.Dishes.First(i => i.Name == "salad").Id));
+            //     Console.WriteLine("Deleting salad dish from menu");
+            // }
+            // catch
+            // {
+            //     Console.WriteLine("No salad dish on menu, could not delete");
+            //     return;
+            // }
 
-            db.SaveChanges();
+            // db.SaveChanges();
         }
     }
 }

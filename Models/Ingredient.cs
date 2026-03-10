@@ -11,12 +11,62 @@ public class Ingredient
     public string Name { get; set; } 
 
     // These should correspond to the Allergens list in the MenuContext
+    
+    //private AllergenStatusBool _allergenDairy = AllergenStatusBool.No;
+    // public AllergenStatusBool AllergenDairy
+    // { 
+    //     get=>_allergenDairy;
+    //     set
+    //     { 
+    //         _allergenDairy = value;
+    //         bool exists = allergensStatusMap.ContainsKey("Dairy");
+    //         if (exists == true)
+    //         {
+    //             allergensStatusMap["Dairy"] = value;
+    //         }
+    //         else 
+    //         {
+    //             allergensStatusMap.Add("Dairy", value);
+    //         }    
+    //     }
+    // }
+
     public AllergenStatusBool AllergenDairy { get; set; } = AllergenStatusBool.No;
     public AllergenStatusBool AllergenGluten { get; set; } = AllergenStatusBool.No;
     public AllergenStatusBool AllergenMeat { get; set; } = AllergenStatusBool.No;
     public AllergenStatusBool AllergenNut { get; set; } = AllergenStatusBool.No;
     public AllergenStatusBool AllergenSesame { get; set; } = AllergenStatusBool.No; 
     public AllergenStatusBool AllergenSpicy { get; set; } = AllergenStatusBool.No;
+
+    //private readonly Dictionary<string, AllergenStatusBool> _allergensStatusMap;
+    [NotMapped]
+    public Dictionary<string, AllergenStatusBool> allergensStatusMap 
+    { 
+        get
+        {
+            return new Dictionary<string, AllergenStatusBool>
+            {
+                {"Dairy", AllergenDairy},
+                {"Gluten", AllergenGluten},
+                {"Meat", AllergenMeat},
+                {"Nut", AllergenNut},
+                {"Sesame", AllergenSesame},
+                {"Spicy", AllergenSpicy},
+            };
+        }
+        set
+        {
+            // allergensStatusMap = new Dictionary<string, AllergenStatusBool>
+            // {
+            //     {"Dairy", AllergenDairy},
+            //     {"Gluten", AllergenGluten},
+            //     {"Meat", AllergenMeat},
+            //     {"Nut", AllergenNut},
+            //     {"Sesame", AllergenSesame},
+            //     {"Spicy", AllergenSpicy},
+            // };
+        }
+    }
 
     public Ingredient( string name = null )
     {

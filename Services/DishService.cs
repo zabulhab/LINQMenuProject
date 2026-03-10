@@ -90,4 +90,82 @@ public class DishService : IMenuService<Dish>
         return 0;
     }
 
+    public List<Ingredient> GetAllDishIngredients(long id)
+    {
+        List<Ingredient> ingredients = [];
+        Dish? dish = _menuContext.Dishes.Find(id);
+        if (dish == null)
+        {
+            Console.WriteLine($"Error: No Dish exists with Id {id}");
+            return null!;
+        }
+        IQueryable<DishIngredientList> dishIngredientList = _menuContext.DishIngredientList.Where(d => d.Dish_ID == id);
+        if (dishIngredientList.Count() != 1)
+        {
+            Console.WriteLine($"Error: No valid ingredient list was found for Dish with Id {id}");
+            return null!;
+        }
+        IQueryable<DishIngredient> dishIngredients = _menuContext.DishIngredients.Where(
+            d => d.DishIngredientList_ID == dishIngredientList.ElementAt(0).Id);
+        if (!dishIngredients.Any())
+        {
+            Console.WriteLine($"Error: No valid ingredients were found for Dish with Id {id}");
+            return null!;
+        }
+        foreach (DishIngredient di in dishIngredients)
+        {
+            Ingredient? ingredient = _menuContext.Ingredients.Find(di.Ingredient_ID);
+            if (ingredient == null)
+            {
+                Console.WriteLine($"Error: Dish with Id {id} contained a non-existent ingredient");
+                return null!;
+            }
+            ingredients.Add(ingredient!);
+        }
+        return ingredients;
+    }
+
+    public Dictionary<String, List<String>> 
+        GetDishAllergens(long id)
+    {
+        Dictionary<String, List<String>>  allergensReturnMap = [];
+        List<Ingredient> ingredients = GetAllDishIngredients(id);
+
+        // Store pairs of each allergen found and the ingredient containing it
+        List<(string, string)> presentAllergens = [];
+        foreach (Ingredient i in ingredients)
+        {
+            Dictionary<string, AllergenStatusBool> allergensStatusMap = 
+                i.allergensStatusMap;
+            
+            foreach (KeyValuePair<string, AllergenStatusBool> pair in allergensStatusMap)
+            {
+                if (pair.Value == AllergenStatusBool.Yes)
+                {
+                    presentAllergens.Add((pair.Key, i.Name));
+                }
+                else if (pair.Value == AllergenStatusBool.Maybe)
+                {
+                    presentAllergens.Add((pair.Key, i.Name+" (maybe)"));
+                }
+            }
+        }
+
+        // Condense allergens found into the return dictionary
+        foreach ((string allergen, string ingredientName) entry in presentAllergens)
+        {
+            if (allergensReturnMap.ContainsKey(entry.allergen))
+            {
+                allergensReturnMap[entry.allergen].Add(entry.ingredientName);
+            }
+            else
+            {
+                allergensReturnMap.Add(entry.allergen, [entry.ingredientName]);
+            }
+        }
+
+        return allergensReturnMap;
+    }
+
+
 }

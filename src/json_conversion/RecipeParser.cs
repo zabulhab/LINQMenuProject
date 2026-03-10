@@ -98,7 +98,7 @@ namespace MenuAPI
             foreach (JsonRecipeMapping.JsonAllergenRepresentation allergen in ingredientJson.Details.Allergens)
             {
                 // Check if allergen is defined in project context
-                if (mc.Allergens.Contains(allergen.AllergenName))
+                if (MenuContext.Allergens.Contains(allergen.AllergenName))
                 {
                     // Get allergen bool status 
                     AllergenStatusBool status;

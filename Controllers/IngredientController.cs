@@ -16,7 +16,7 @@ public class IngredientController : ControllerBase
     { 
         _ingredientService = new IngredientService(menuContext);
     }
-    private readonly IMenuService<Ingredient> _ingredientService;
+    private readonly IngredientService _ingredientService;
 
     [HttpGet]
     public ActionResult<IEnumerable<Ingredient>> GetAll()

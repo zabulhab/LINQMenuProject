@@ -60,7 +60,7 @@ POST {{MenuAPI_HostAddress}}/Dish/
 Content-Type: application/json
 
 {
-    "Name": "NewDish"
+    "Name": "MyDish"
 }
 
 ### Overwrite Dish (all blanks besides Id)
@@ -86,3 +86,20 @@ Accept: application/json
 
 ### Delete Dish
 DELETE {{MenuAPI_HostAddress}}/Dish/111
+
+
+# Get all Ingredients in a Dish
+
+
+# Add DishIngredient to a Dish
+# Pass Ingredient and Dish IDs in POST
+
+
+
+### Get all ingredients in a specific Dish
+GET {{MenuAPI_HostAddress}}/Dish/1480899701233418249/Ingredients
+Accept: application/json
+
+### Get all allergens in a specific Dish
+GET {{MenuAPI_HostAddress}}/Dish/1480899701216641024/Allergens
+Accept: application/json
